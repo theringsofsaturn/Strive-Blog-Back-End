@@ -23,5 +23,14 @@ authorsRouter.post("/author", (req, res, next) => {
 
   //2. read the the content of authors.json
 
+  const authors = readAuthors;
+
+  //3. push new author to the array
+
+  authors.push(newAuthor);
+
+  //4. Rewrite the new array to the json file
+  writeAuthors(authors)
+
   const authors = readAuthors();
 });
