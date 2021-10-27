@@ -1,12 +1,38 @@
-import fs from "fs-extra";
-import { fileURLToPath } from "url";
-import { join, dirname } from "path";
+import fs from "fs-extra"; // will enable to read or write the json file at the particular path
+import { fileURLToPath } from "url"; // it's core module to convert the current url from import.meta.url to current file path
+import { join, dirname } from "path"; // core modules, dirname will localize the directory name, join will join directory with json file name
 
-const { readJSON, writeJSON, writeFile } = fs;
+import { v2 as cloudinary } from "cloudinary"; // cloudinary module
+import { CloudinaryStorage } from "multer-storage-cloudinary"; // cloudinary module
+
+//  fs variables
+const {
+  readJSON,
+  writeJSON,
+  writeFile,
+  readFile,
+  remove,
+  createReadStream,
+  createWriteStream,
+} = fs;
+
+// obtaining the path to the authors json file
+//1. starting from the current file path
+// const currentFilePath = fileURLToPath(import.meta.url);
+//2. Next we obtain the path of the directory the current file is in
+// const currentDirPath = dirname(currentFilePath);
+//3. Next step is to concatenate the directory path with the json file name which is authors.json
+//ATTENTION USE THE METHOD JOIN (from path) AND NOT CONCATENATE AS USUAL WITH +, this way will function for every system
+// const authorsJSONPath = join(currentDirPath, "authors.json");
 
 const blogsJSONPath = join(
   dirname(fileURLToPath(import.meta.url)),
   "../data/blogs.json"
+);
+
+export const blogsImgFolderPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../public/img/blogs"
 );
 
 const authorsJSONPath = join(
@@ -14,12 +40,55 @@ const authorsJSONPath = join(
   "../data/authors.json"
 );
 
-const publicFolderPath = join(process.cwd(), "./public/img/"); //process.cwd() is ROOT
+export const authorsAvatarsFolderPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../public/img/authors"
+);
 
-export const getBlogs = () => readJSON(blogsJSONPath);
+// const publicFolderPath = join(process.cwd(), "./public/img/"); //process.cwd() is ROOT
+
+// *************** AUTHORS ****************
+export const readAuthors = () => readJSON(authorsJSONPath);
+export const writeAuthors = () => writeJSON(authorsJSONPath);
+
+// Avatars
+
+// cloudinary method
+export const saveAvatarCloudinary = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    format: "png",
+    folder: "striveBlog/avatars",
+  },
+});
+
+// fs-methods
+
+// Save avatar
+export const saveAvatar = (fileName, content) =>
+  writeFile(join(authorsAvatarsFolderPath, fileName), content); // content is buffer
+
+// Remove avatar
+export const removeAvatar = (fileName) =>
+  remove(join(authorsAvatarsFolderPath, fileName));
+
+// ************* BLOG POSTS *****************
+export const readBlogs = () => readJSON(blogsJSONPath);
 export const writeBlogs = () => writeJSON(blogsJSONPath); // content is array
-export const getauthors = () => readJSON(authorsJSONPath);
-export const writeauthors = () => writeJSON(authorsJSONPath);
 
-export const savePicture = (fileName, content) =>
-  writeFile(join(publicFolderPath, fileName), content); // content is bufferFormat
+// Covers
+
+// cloudinary method
+export const saveCoverCloudinary = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    format: "png",
+    folder: "striveBlog/covers",
+  },
+});
+
+// fs method
+export const saveCover = (fileName, content) =>
+  writeFile(join(blogsImgFolderPath, fileName), content);
+export const removeCover = (fileName) =>
+  remove(join(blogsImgFolderPath, fileName));
