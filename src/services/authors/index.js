@@ -1,9 +1,13 @@
 import express from "express"; // We need to import express to use it's functionalities
+
 import uniqid from "uniqid"; // will generate a unique ID for the authors
-import createError from "http-errors";
+
+import createError from "http-errors"; // create http errors
 import multer from "multer";
+
 import { validationResult } from "express-validator";
 import { authorsValidation } from "./validation";
+
 import { pipeline } from "stream";
 import json2csv from "json2csv";
 
@@ -17,20 +21,22 @@ authorsRouter.post("/author", (req, res, next) => {
 
   const newAuthor = {
     ...req.body,
-    ID: uniqid(),
+    id: uniqid(),
     createdAt: new Date(),
   };
 
   //2. read the the content of authors.json
 
-  const authors = readAuthors;
+  const authors = readAuthors();
 
   //3. push new author to the array
 
   authors.push(newAuthor);
 
   //4. Rewrite the new array to the json file
-  writeAuthors(authors)
+  writeAuthors(authors);
 
-  const authors = readAuthors();
+  //5. send back the the ID as response
+
+  res.status(201).send({ newAuthor });
 });
