@@ -15,28 +15,28 @@ import json2csv from "json2csv";
 //  Here we use Router express functionality to provide Routing to the server
 const authorsRouter = express.Router();
 
-authorsRouter.post("/author", (req, res, next) => {
-  // remember to add server.use(express.json()) to the server file
-  //1. read the requests body
+authorsRouter.post("/", authorsValidation, async (req, res, next) => {
+  try {
+    const errorList = validationResult(req);
 
-  const newAuthor = {
-    ...req.body,
-    id: uniqid(),
-    createdAt: new Date(),
-  };
-
-  //2. read the the content of authors.json
-
-  const authors = readAuthors();
-
-  //3. push new author to the array
-
-  authors.push(newAuthor);
-
-  //4. Rewrite the new array to the json file
-  writeAuthors(authors);
-
-  //5. send back the the ID as response
-
-  res.status(201).send({ newAuthor });
+    if (errorList.isEmpty()) {
+      //1. read the the content of authors.json
+      const authors = readAuthors();
+      //2. read the requests body
+      const newAuthor = {
+        ...req.body,
+        id: uniqid(),
+        createdAt: new Date(),
+      };
+      //3. push new author to the array
+      authors.push(newAuthor);
+      //4. Rewrite the new array to the json file
+      writeAuthors(authors);
+      //5. send back the the ID as response
+      res.status(201).send({ newAuthor });
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 });
