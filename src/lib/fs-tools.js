@@ -14,7 +14,12 @@ const authorsJSONPath = join(
   "../data/authors.json"
 );
 
+const publicFolderPath = join(process.cwd(), "./public/img/"); //process.cwd() is ROOT
+
 export const getBlogs = () => readJSON(blogsJSONPath);
-export const writeBlogs = () => writeJSON(blogsJSONPath);
+export const writeBlogs = () => writeJSON(blogsJSONPath); // content is array
 export const getauthors = () => readJSON(authorsJSONPath);
 export const writeauthors = () => writeJSON(authorsJSONPath);
+
+export const savePicture = (fileName, content) =>
+  writeFile(join(publicFolderPath, fileName), content); // content is bufferFormat
