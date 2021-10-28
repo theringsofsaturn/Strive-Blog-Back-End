@@ -53,14 +53,26 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
 // Get all the authors
 authorsRouter.get("/", async (req, res, next) => {
   try {
-    const errorList = validationResult(req);
+    //1. read the the content of authors.json
+    const authors = await readAuthors();
+    //2. send back the array of authors
+    res.status(200).send(authors);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
 
-    if (errorList.isEmpty) {
-      //1. read the the content of authors.json
-      const authors = await readAuthors();
-      //2. send back the array of authors
-      res.status(200).send(authors);
-    } else {
+// Get an author with an ID
+authorsRouter.get("/:id", async (req, res, next) => {
+  try {
+    const paramsId = req.params.id;
+    const authors = await readAuthors();
+
+    const author = authors.find((author) => author.id === paramsId);
+    if (author) {
+      res.status(200).send(author);
+    }else{
       next(createError(400, { errorList }));
     }
   } catch (error) {
