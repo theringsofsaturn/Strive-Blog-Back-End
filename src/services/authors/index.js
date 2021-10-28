@@ -21,6 +21,7 @@ import {
 //  Here we use Router express functionality to provide Routing to the server
 const authorsRouter = express.Router();
 
+// Create a new author
 authorsRouter.post("/", authorsValidation, async (req, res, next) => {
   try {
     const errorList = validationResult(req);
@@ -40,6 +41,25 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
       await writeAuthors(authors);
       //5. send back the the ID as response
       res.status(201).send(newAuthor);
+    } else {
+      next(createError(400, { errorList }));
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+// Get all the authors
+authorsRouter.get("/", async (req, res, next) => {
+  try {
+    const errorList = validationResult(req);
+
+    if (errorList.isEmpty) {
+      //1. read the the content of authors.json
+      const authors = await readAuthors();
+      //2. send back the array of authors
+      res.status(200).send(authors);
     } else {
       next(createError(400, { errorList }));
     }
