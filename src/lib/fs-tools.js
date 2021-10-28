@@ -49,7 +49,8 @@ export const authorsAvatarsFolderPath = join(
 
 // *************** AUTHORS ****************
 export const readAuthors = () => readJSON(authorsJSONPath);
-export const writeAuthors = () => writeJSON(authorsJSONPath);
+export const writeAuthors = (content) => writeJSON(authorsJSONPath, content);
+export const getAuthorsReadableStream = () => createReadStream(authorsJSONPath);
 
 // Avatars
 

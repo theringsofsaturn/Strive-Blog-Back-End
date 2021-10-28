@@ -10,6 +10,13 @@ import { authorsValidation } from "./validation.js";
 
 import { pipeline } from "stream";
 
+import {
+  readAuthors,
+  writeAuthors,
+  saveAvatarCloudinary,
+  getAuthorsReadableStream,
+} from "../../lib/fs-tools.js";
+
 // Router is a set of endpoints that share something like a prefix. authorsRouter is going to have /authors a a prefix.
 //  Here we use Router express functionality to provide Routing to the server
 const authorsRouter = express.Router();
@@ -20,7 +27,7 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
 
     if (errorList.isEmpty()) {
       //1. read the the content of authors.json
-      const authors = readAuthors();
+      const authors = await readAuthors();
       //2. read the requests body
       const newAuthor = {
         ...req.body,
@@ -30,9 +37,11 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
       //3. push new author to the array
       authors.push(newAuthor);
       //4. Rewrite the new array to the json file
-      writeAuthors(authors);
+      await writeAuthors(authors);
       //5. send back the the ID as response
-      res.status(201).send({ newAuthor });
+      res.status(201).send(newAuthor);
+    } else {
+      next(createError(400, { errorList }));
     }
   } catch (error) {
     console.log(error);
@@ -40,5 +49,4 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
   }
 });
 
-
-export default authorsRouter
+export default authorsRouter;

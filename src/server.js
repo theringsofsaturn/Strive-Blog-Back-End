@@ -4,6 +4,13 @@ import listEndpoints from "express-list-endpoints";
 import authorsRouter from "./services/authors/index.js"
 // import blogRouter from "./services/blog/index.js"
 
+import {
+  notFoundHandler,
+  badRequestHandler,
+  forbiddenHandler,
+  genericServerErrorHandler,
+} from "./errorHandlers.js"
+
 const server = express();
 const port = 3001; //server to listen on the port, it is stores into a variable
 
@@ -17,12 +24,18 @@ const loggerMiddleware = (res, req, next) => {
 
 server.use(loggerMiddleware)
 //cors and express are middlewares
-server.use(express.json) //this has to be specified BEFORE the routes, otherwise the body will be undefined
+server.use(express.json()) //this has to be specified BEFORE the routes, otherwise the body will be undefined
 server.use(cors()) //cors connects BE with FE
 
 // routes
 server.use("/authors", authorsRouter)
 // server.use("/blogs", blogRouter)
+
+// *********************** ERROR MIDDLEWARES ***************************
+server.use(notFoundHandler)
+server.use(badRequestHandler)
+server.use(forbiddenHandler)
+server.use(genericServerErrorHandler)
 
 console.table(listEndpoints(server))
 
