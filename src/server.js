@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors"
 import listEndpoints from "express-list-endpoints";
 import authorsRouter from "./services/authors/index.js"
-import blogRouter from "./services/blog/index.js"
+// import blogRouter from "./services/blog/index.js"
 
 const server = express();
 const port = 3001; //server to listen on the port, it is stores into a variable
@@ -22,7 +22,7 @@ server.use(cors()) //cors connects BE with FE
 
 // routes
 server.use("/authors", authorsRouter)
-server.use("/blogs", blogRouter)
+// server.use("/blogs", blogRouter)
 
 console.table(listEndpoints(server))
 

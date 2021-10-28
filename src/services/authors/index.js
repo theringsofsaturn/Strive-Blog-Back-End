@@ -6,10 +6,9 @@ import createError from "http-errors"; // create http errors
 import multer from "multer";
 
 import { validationResult } from "express-validator";
-import { authorsValidation } from "./validation";
+import { authorsValidation } from "./validation.js";
 
 import { pipeline } from "stream";
-import json2csv from "json2csv";
 
 // Router is a set of endpoints that share something like a prefix. authorsRouter is going to have /authors a a prefix.
 //  Here we use Router express functionality to provide Routing to the server
@@ -40,3 +39,6 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
     next(error);
   }
 });
+
+
+export default authorsRouter
