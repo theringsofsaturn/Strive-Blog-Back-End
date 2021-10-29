@@ -129,28 +129,38 @@ authorsRouter.put("/:id", authorsValidation, async (req, res, next) => {
 
 // delete a specific author (the one that matches the id of the request)
 authorsRouter.delete("/:id", async (req, res, next) => {
-  // save request params id in a variable
-  const paramsId = req.params.id;
-  // read the the content of authors.json
-  const authors = await readAuthors();
-  // find the author with the id requested
-  const author = authors.find((author) => author.id === paramsId);
+  try {
+    // save request params id in a variable
+    const paramsId = req.params.id;
+    // read the the content of authors.json
+    const authors = await readAuthors();
+    // find the author with the id requested
+    const author = authors.find((author) => author.id === paramsId);
 
-  if (author) {
-    // the remaining authors - all the authors apart the one we want to delete, the one that matches the id
-    const remainingAuthors = authors.filter((author) => author.id !== paramsId);
-    // with the function writeAuthord we can save the new updated array of authors in the authors json file where they are stored
-    await writeAuthors(remainingAuthors);
+    if (author) {
+      // the remaining authors - all the authors apart the one we want to delete, the one that matches the id
+      const remainingAuthors = authors.filter(
+        (author) => author.id !== paramsId
+      );
+      // with the function writeAuthord we can save the new updated array of authors in the authors json file where they are stored
+      await writeAuthors(remainingAuthors);
 
-    res.send({
-      status: 204,
-      message: `The author with the id: ${paramsId} was deleted successfully`,
-      author: author,
-    });
-  } else {
-    next(
-      createHttpError(404, `The author with the id: ${paramsId} was not found`)
-    );
+      res.send({
+        status: 204,
+        message: `The author with the id: ${paramsId} was deleted successfully`,
+        author: author,
+      });
+    } else {
+      next(
+        createHttpError(
+          404,
+          `The author with the id: ${paramsId} was not found`
+        )
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
   }
 });
 
@@ -164,9 +174,7 @@ authorsRouter.get("/", async (req, res, next) => {
     // if there is a query name in the request, filter the name in authors json and see if it matches the one requested. If yes, send it back, if not send back the authors in the json
     if (req.query && req.query.name) {
       const filteredAuthors = authors.filter((author) =>
-        author.name
-          .toLowerCase()
-          .includes(req.query.name.toLowerCase())
+        author.name.toLowerCase().includes(req.query.name.toLowerCase())
       );
       res.send(filteredAuthors);
     } else {
@@ -177,5 +185,12 @@ authorsRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+// upload an avatars
+authorsRouter.post(
+  ":id/upload-avatar",
+  multer({ storage: saveAvatarCloudinary }).single("avatar"),
+  async (req, res, next) => {}
+);
 
 export default authorsRouter;
