@@ -27,19 +27,19 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
     const errorList = validationResult(req);
 
     if (errorList.isEmpty()) {
-      //1. read the the content of authors.json
+      // read the the content of authors.json
       const authors = await readAuthors();
-      //2. read the requests body
+      // read the requests body
       const newAuthor = {
         ...req.body,
         id: uniqid(),
         createdAt: new Date(),
       };
-      //3. push new author to the array
+      // push new author to the array
       authors.push(newAuthor);
-      //4. Rewrite the new array to the json file
+      // Rewrite the new array to the json file
       await writeAuthors(authors);
-      //5. send back the the ID as response
+      // send back the the ID as response
       res.status(201).send(newAuthor);
     } else {
       next(createError(400, { errorList }));
@@ -53,7 +53,7 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
 // Get all the authors
 authorsRouter.get("/", async (req, res, next) => {
   try {
-    //1. read the the content of authors.json
+    // read the the content of authors.json
     const authors = await readAuthors();
     //2. send back the array of authors
     res.status(200).send(authors);
@@ -66,14 +66,49 @@ authorsRouter.get("/", async (req, res, next) => {
 // Get an author with an ID
 authorsRouter.get("/:id", async (req, res, next) => {
   try {
+    // save request params id in a variable
     const paramsId = req.params.id;
+    // read the the content of authors.json
     const authors = await readAuthors();
 
+    // find the author with the id requested
     const author = authors.find((author) => author.id === paramsId);
+    // if we get the author with that id (if it's true), then send back that author
     if (author) {
       res.status(200).send(author);
-    }else{
-      next(createError(400, { errorList }));
+    } else {
+      next(createError(404, `Author with id ${paramsId} was not found`));
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+// Edit an author with an ID
+authorsRouter.put("/:id", authorsValidation, async (req, res, next) => {
+  try {
+    // save request params id in a variable
+    const paramsId = req.params.id;
+    const errorList = validationResult(req);
+
+    if (errorList.isEmpty) {
+      // read the the content of authors.json
+      const authors = await readAuthors();
+      // find the author with the id requested
+      const author = authors.find((author) => author.id === paramsId);
+      // the updatedAuthor is the merge of the copied object of the current author that matches the id, with the copied object of the body request that will overwrite some part or everything of the original
+      const updatedAuthor = { ...author, ...req.body };
+      // the remaining authors - all the authors apart the one we want to modify that matches the id
+      const remainingAuthors = authors.filter(
+        (author) => author.id !== paramsId
+      );
+      // push the updatedAuthor, the one we modified, to the remainingAuthors array (the authors we didn't touch)
+      remainingAuthors.push(updatedAuthor);
+      // with the function writeAuthord we can save the new updated array of authors in the authors json file where they are stored
+      await writeAuthors(remainingAuthors);
+
+      res.status(200).send(`Author with id ${paramsId} updated successfully`);
     }
   } catch (error) {
     console.log(error);
