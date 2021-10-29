@@ -154,4 +154,28 @@ authorsRouter.delete("/:id", async (req, res, next) => {
   }
 });
 
+// search an author
+
+authorsRouter.get("/", async (req, res, next) => {
+  try {
+    // read the the content of authors.json
+    const authors = await readAuthors();
+
+    // if there is a query name in the request, filter the name in authors json and see if it matches the one requested. If yes, send it back, if not send back the authors in the json
+    if (req.query && req.query.name) {
+      const filteredAuthors = authors.filter((author) =>
+        author.name
+          .toLowerCase()
+          .includes(req.query.name.toLowerCase())
+      );
+      res.send(filteredAuthors);
+    } else {
+      res.send(authors);
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 export default authorsRouter;
