@@ -92,7 +92,7 @@ authorsRouter.put("/:id", authorsValidation, async (req, res, next) => {
     const paramsId = req.params.id;
     const errorList = validationResult(req);
 
-    if (errorList.isEmpty) {
+    if (errorList.isEmpty()) {
       // read the the content of authors.json
       const authors = await readAuthors();
       // find the author with the id requested
