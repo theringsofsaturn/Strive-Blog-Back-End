@@ -180,6 +180,7 @@ blogPostsRouter.post(
   }
 );
 
+// get comments of a blog post
 blogPostsRouter.get("/:id/comments", async (req, res, next) => {
   try {
     const paramsId = req.params.id;
@@ -191,6 +192,33 @@ blogPostsRouter.get("/:id/comments", async (req, res, next) => {
     } else {
       next(
         createHttpError(404, `Blog post with id: ${paramsId} was not found.`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// download blog post as PDF
+blogPostsRouter.get("/:id/download/pdf", async (req, res, next) => {
+  try {
+    const paramsID = req.params._id;
+    const blogPosts = await readBlogPosts();
+    const blogPost = blogPosts.find((blogPost) => blogPost.id === paramsID);
+    if (blogPost) {
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=blog-post.pdf"
+      ); // this enables to download the pdf
+      const source = await getBlogPostPDFReadableStream(blogPost);
+      const destination = res;
+
+      pipeline(source, destination, (err) => {
+        if (err) next(err);
+      });
+    } else {
+      res.send(
+        createHttpError(404, `Blog post with id: ${paramsID} was not found.`)
       );
     }
   } catch (error) {
