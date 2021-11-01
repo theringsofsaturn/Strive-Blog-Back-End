@@ -44,20 +44,56 @@ blogPostsRouter.get("/", async (req, res, next) => {
 
 // get blog post with matching ID
 blogPostsRouter.get("/:id", async (req, res, next) => {
-    try {
-      const paramsID = req.params.id;
-      const blogPosts = await readBlogPosts();
-      const blogPost = blogPosts.find((blogPost) => blogPost.id === paramsID);
-      if (blogPost) {
-        res.send(blogPost);
-      } else {
-        res.send(
-          createHttpError(404, `Blog post with id: ${paramsID} was not found.`)
-        );
-      }
-    } catch (error) {
-      next(error);
+  try {
+    const paramsID = req.params.id;
+    const blogPosts = await readBlogPosts();
+    const blogPost = blogPosts.find((blogPost) => blogPost.id === paramsID);
+    if (blogPost) {
+      res.send(blogPost);
+    } else {
+      res.send(
+        createHttpError(404, `Blog post with id: ${paramsID} was not found.`)
+      );
     }
-  });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
 
-  export default blogPostsRouter
+// create a new post
+blogPostsRouter.post("/", blogPostValidation, async (req, res, next) => {
+  try {
+    const errorList = validationResult(req);
+    if (errorList.isEmpty) {
+      const authors = await readAuthors();
+      const randomAuthor = authors[Math.floor(Math.random() * authors.length)];
+
+      const blogPosts = await readBlogPosts();
+
+      const newBlogPost = {
+        _id: uniqid(),
+        createdAt: new Date(),
+        // readTime: { value: 1, unit: "minute" },
+        author: {
+          name: `${randomAuthor.name} ${randomAuthor.surname}`,
+          avatar: randomAuthor.avatar,
+        },
+        comments: [],
+        ...req.body,
+      };
+
+      blogPosts.push(newBlogPost);
+      await writeBlogPosts(blogPosts);
+
+      res.status(201).send(newBlogPost);
+    } else {
+      next(createHttpError(400, { errorList }));
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+export default blogPostsRouter;
