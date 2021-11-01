@@ -226,4 +226,25 @@ blogPostsRouter.get("/:id/download/pdf", async (req, res, next) => {
   }
 });
 
+// send PDF as email
+blogPostsRouter.get("/:id/email", async (req, res, next) => {
+  try {
+    const paramsID = req.params.id;
+    const blogPosts = await readBlogPosts();
+    const blogPost = blogPosts.find((blogPost) => blogPost.id === paramsID);
+    if (blogPost) {
+      const blogPostPDFPath = await generateBlogPostPDFAsync(blogPost);
+      await sendEmail(blogPost, blogPostPDFPath);
+      await deletePDFFile(blogPostPDFPath);
+      res.send("Email sent!");
+    } else {
+      res.send(
+        createHttpError(404, `Blog post with id: ${paramsID} was not found.`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default blogPostsRouter;
