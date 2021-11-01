@@ -96,4 +96,29 @@ blogPostsRouter.post("/", blogPostValidation, async (req, res, next) => {
   }
 });
 
+// update blog posts
+blogPostsRouter.put("/:id", blogPostValidation, async(req, res, next)=>{
+  try {
+    const errorList = validationResult(req);
+    if (errorList.isEmpty()) {
+      const paramsID = req.params.id;
+      const blogPosts = await readBlogPosts();
+      const blogPostToUpdate = blogPosts.find((blogPost) => blogPosts.id === paramsID);
+
+      const updatedBlogPost = { ...blogPostToUpdate, ...req.body };
+
+      const remainingBlogPosts = blogPosts.filter((p) => p.id !== paramsID);
+
+      remainingBlogPosts.push(updatedBlogPost);
+      await writeBlogPosts(remainingBlogPosts);
+
+      res.send(updatedBlogPost);
+    } else {
+      next(createHttpError(400, { errorList }));
+    }
+  } catch (error) {
+    next(error);
+  }
+})
+
 export default blogPostsRouter;
