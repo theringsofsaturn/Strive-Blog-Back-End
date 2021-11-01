@@ -1,6 +1,6 @@
 import express from "express";
 import uniqid from "uniqid";
-import createError from "http-errors";
+import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
 import {
   readBlogPosts,
@@ -72,7 +72,7 @@ blogPostsRouter.post("/", blogPostValidation, async (req, res, next) => {
       const blogPosts = await readBlogPosts();
 
       const newBlogPost = {
-        _id: uniqid(),
+        id: uniqid(),
         createdAt: new Date(),
         // readTime: { value: 1, unit: "minute" },
         author: {
