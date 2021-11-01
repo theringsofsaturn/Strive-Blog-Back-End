@@ -45,7 +45,7 @@ blogPostsRouter.get("/", async (req, res, next) => {
 // get blog post with matching ID
 blogPostsRouter.get("/:id", async (req, res, next) => {
     try {
-      const paramsID = req.params._id;
+      const paramsID = req.params.id;
       const blogPosts = await readBlogPosts();
       const blogPost = blogPosts.find((blogPost) => blogPost.id === paramsID);
       if (blogPost) {
