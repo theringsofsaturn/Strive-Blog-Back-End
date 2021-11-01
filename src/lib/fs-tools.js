@@ -25,12 +25,12 @@ const {
 //ATTENTION USE THE METHOD JOIN (from path) AND NOT CONCATENATE AS USUAL WITH +, this way will function for every system
 // const authorsJSONPath = join(currentDirPath, "authors.json");
 
-const blogsJSONPath = join(
+const blogPostsJSONPath = join(
   dirname(fileURLToPath(import.meta.url)),
   "../data/blogs.json"
 );
 
-export const blogsImgFolderPath = join(
+export const blogPostsFolderPath = join(
   dirname(fileURLToPath(import.meta.url)),
   "../../public/img/blogs"
 );
@@ -74,8 +74,8 @@ export const removeAvatar = (fileName) =>
   remove(join(authorsAvatarsFolderPath, fileName));
 
 // ************* BLOG POSTS *****************
-export const readBlogs = () => readJSON(blogsJSONPath);
-export const writeBlogs = () => writeJSON(blogsJSONPath); // content is array
+export const readBlogPosts = () => readJSON(blogPostsJSONPath);
+export const writeBlogPosts = () => writeJSON(blogPostsJSONPath); // content is array
 
 // Covers
 
