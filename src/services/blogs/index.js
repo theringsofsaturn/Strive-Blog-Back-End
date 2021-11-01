@@ -162,17 +162,16 @@ blogPostsRouter.post(
       if (blogPost) {
         const coverUrl = req.file.path;
         const updatedBlogPost = { ...blogPost, cover: coverUrl };
-        const remainingBlogPosts = blogPosts.filter((blogPost) => blogPost.id !== paramsId);
+        const remainingBlogPosts = blogPosts.filter(
+          (blogPost) => blogPost.id !== paramsId
+        );
 
         remainingBlogPosts.push(updatedBlogPost);
         await writeBlogPosts(remainingBlogPosts);
         res.send(updatedBlogPost);
       } else {
         next(
-          createHttpError(
-            404,
-            `Blog post with id: ${paramsId} was not found.`
-          )
+          createHttpError(404, `Blog post with id: ${paramsId} was not found.`)
         );
       }
     } catch (error) {
@@ -180,5 +179,23 @@ blogPostsRouter.post(
     }
   }
 );
+
+blogPostsRouter.get("/:id/comments", async (req, res, next) => {
+  try {
+    const paramsId = req.params.id;
+    const blogPosts = await readBlogPosts();
+    const blogPost = blogPosts.find((blogPost) => blogPost.id === paramsId);
+    if (blogPost) {
+      const blogPostComments = blogPost.comments;
+      res.send(blogPostComments);
+    } else {
+      next(
+        createHttpError(404, `Blog post with id: ${paramsId} was not found.`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default blogPostsRouter;
