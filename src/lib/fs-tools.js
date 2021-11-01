@@ -75,7 +75,7 @@ export const removeAvatar = (fileName) =>
 
 // ************* BLOG POSTS *****************
 export const readBlogPosts = () => readJSON(blogPostsJSONPath);
-export const writeBlogPosts = () => writeJSON(blogPostsJSONPath); // content is array
+export const writeBlogPosts = (content) => writeJSON(blogPostsJSONPath, content); // content is array
 
 // Covers
 

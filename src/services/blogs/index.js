@@ -123,6 +123,7 @@ blogPostsRouter.put("/:id", blogPostValidation, async (req, res, next) => {
   }
 });
 
+// delete blog post
 blogPostsRouter.delete("/:id", async (req, res, next) => {
   try {
     const paramsID = req.params._id;
@@ -148,5 +149,36 @@ blogPostsRouter.delete("/:id", async (req, res, next) => {
     next(error);
   }
 });
+
+// blog posts cover
+blogPostsRouter.post(
+  "/:id/upload/cover",
+  multer({ storage: saveCoverCloudinary }).single("cover"),
+  async (req, res, next) => {
+    try {
+      const paramsId = req.params.id;
+      const blogPosts = await readBlogPosts();
+      const blogPost = blogPosts.find((blogPost) => blogPost.id === paramsId);
+      if (blogPost) {
+        const coverUrl = req.file.path;
+        const updatedBlogPost = { ...blogPost, cover: coverUrl };
+        const remainingBlogPosts = blogPosts.filter((blogPost) => blogPost.id !== paramsId);
+
+        remainingBlogPosts.push(updatedBlogPost);
+        await writeBlogPosts(remainingBlogPosts);
+        res.send(updatedBlogPost);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Blog post with id: ${paramsId} was not found.`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default blogPostsRouter;
