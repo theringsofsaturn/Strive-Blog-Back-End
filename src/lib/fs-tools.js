@@ -58,7 +58,7 @@ export const getAuthorsReadableStream = () => createReadStream(authorsJSONPath);
 export const saveAvatarCloudinary = new CloudinaryStorage({
   cloudinary,
   params: {
-    format: "png",
+    format: "jpg",
     folder: "striveBlog/avatars",
   },
 });
@@ -83,7 +83,6 @@ export const writeBlogs = () => writeJSON(blogsJSONPath); // content is array
 export const saveCoverCloudinary = new CloudinaryStorage({
   cloudinary,
   params: {
-    format: "png",
     folder: "striveBlog/covers",
   },
 });

@@ -2,7 +2,7 @@ import express from "express"; // We need to import express to use it's function
 
 import uniqid from "uniqid"; // will generate a unique ID for the authors
 
-import createError from "http-errors"; // create http errors
+import createHttpError from "http-errors"; // create http errors
 import multer from "multer";
 
 import { validationResult } from "express-validator";
@@ -186,11 +186,39 @@ authorsRouter.get("/", async (req, res, next) => {
   }
 });
 
-// upload an avatars
+// upload an avatar
 authorsRouter.post(
-  ":id/upload-avatar",
+  "/:id/upload/avatar",
   multer({ storage: saveAvatarCloudinary }).single("avatar"),
-  async (req, res, next) => {}
+  async (req, res, next) => {
+    try {
+      // save request params id in a variable
+      const paramsId = req.params.id;
+      // read the the content of authors.json
+      const authors = await readAuthors();
+      // find the author with the id requested
+      const author = authors.find((author) => author.id === paramsId);
+
+      if (author) {
+        const avatarUrl = req.file.path;
+        const updatedAuthor = { ...author, avatar: avatarUrl };
+        const remainingAuthors = authors.filter(
+          (author) => author.id !== paramsId
+        );
+        remainingAuthors.push(updatedAuthor);
+        await writeAuthors(remainingAuthors);
+
+        res.send(updatedAuthor);
+      } else {
+        next(
+          createHttpError(404, `Author with the id: ${paramsId} was not found.`)
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 );
 
 export default authorsRouter;
