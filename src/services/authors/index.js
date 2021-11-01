@@ -1,14 +1,11 @@
 import express from "express"; // We need to import express to use it's functionalities
-
 import uniqid from "uniqid"; // will generate a unique ID for the authors
-
 import createHttpError from "http-errors"; // create http errors
 import multer from "multer";
-
 import { validationResult } from "express-validator";
 import { authorsValidation } from "./validation.js";
-
 import { pipeline } from "stream";
+import json2csv from "json2csv";
 
 import {
   readAuthors,
@@ -220,5 +217,21 @@ authorsRouter.post(
     }
   }
 );
+
+// export CSV file
+authorsRouter.get("/download/csv", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", `attachment; filename=Authors.csv`);
+
+    const source = getAuthorsReadableStream();
+    const transform = new json2csv.Transform({
+      fields: ["_id", "name", "surname", "email", "birthDate", "avatar"],
+    });
+    const destination = res;
+    pipeline(source, transform, destination, (err) => {
+      if (err) next(err);
+    });
+  } catch (error) {}
+});
 
 export default authorsRouter;
