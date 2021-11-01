@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors"
 import listEndpoints from "express-list-endpoints";
 import authorsRouter from "./services/authors/index.js"
-// import blogRouter from "./services/blog/index.js"
+import blogPostsRouter from "./services/blogs/index.js"
 
 import {
   notFoundHandler,

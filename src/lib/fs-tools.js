@@ -89,6 +89,11 @@ export const saveCoverCloudinary = new CloudinaryStorage({
 
 // fs method
 export const saveCover = (fileName, content) =>
-  writeFile(join(blogsImgFolderPath, fileName), content);
+  writeFile(join(blogPostsFolderPath, fileName), content);
 export const removeCover = (fileName) =>
-  remove(join(blogsImgFolderPath, fileName));
+  remove(join(blogPostsFolderPath, fileName));
+
+  // email
+export const writePDFStream = (path) => createWriteStream(path);
+export const readPDFFile = (path) => readFile(path);
+export const deletePDFFile = (path) => remove(path);

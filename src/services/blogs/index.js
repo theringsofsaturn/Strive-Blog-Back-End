@@ -14,13 +14,13 @@ import {
   generateBlogPostPDFAsync,
 } from "../../lib/pdfMakeTools.js";
 import { pipeline } from "stream";
-import { sendEmail } from "../../lib/emailMakeTools.js";
+// import { sendEmail } from "../../lib/emailMakeTools.js";
 import { blogPostValidation, blogPostCommentValidation } from "./validation.js";
 import multer from "multer";
 
 const blogPostsRouter = express.Router();
 
-// blog post information
+// get blog posts information
 blogPostsRouter.get("/", async (req, res, next) => {
   try {
     const blogPosts = await readBlogPosts();
@@ -41,3 +41,23 @@ blogPostsRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+// get blog post with matching ID
+blogPostsRouter.get("/:id", async (req, res, next) => {
+    try {
+      const paramsID = req.params._id;
+      const blogPosts = await readBlogPosts();
+      const blogPost = blogPosts.find((blogPost) => blogPost.id === paramsID);
+      if (blogPost) {
+        res.send(blogPost);
+      } else {
+        res.send(
+          createHttpError(404, `Blog post with id: ${paramsID} was not found.`)
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  export default blogPostsRouter
