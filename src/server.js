@@ -29,7 +29,7 @@ server.use(cors()) //cors connects BE with FE
 
 // routes
 server.use("/authors", authorsRouter)
-// server.use("/blogs", blogRouter)
+server.use("/blogPosts", blogPostsRouter)
 
 // *********************** ERROR MIDDLEWARES ***************************
 server.use(notFoundHandler)
