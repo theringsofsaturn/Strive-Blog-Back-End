@@ -97,13 +97,15 @@ blogPostsRouter.post("/", blogPostValidation, async (req, res, next) => {
 });
 
 // update blog posts
-blogPostsRouter.put("/:id", blogPostValidation, async(req, res, next)=>{
+blogPostsRouter.put("/:id", blogPostValidation, async (req, res, next) => {
   try {
     const errorList = validationResult(req);
     if (errorList.isEmpty()) {
       const paramsID = req.params.id;
       const blogPosts = await readBlogPosts();
-      const blogPostToUpdate = blogPosts.find((blogPost) => blogPosts.id === paramsID);
+      const blogPostToUpdate = blogPosts.find(
+        (blogPost) => blogPosts.id === paramsID
+      );
 
       const updatedBlogPost = { ...blogPostToUpdate, ...req.body };
 
@@ -119,6 +121,32 @@ blogPostsRouter.put("/:id", blogPostValidation, async(req, res, next)=>{
   } catch (error) {
     next(error);
   }
-})
+});
+
+blogPostsRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const paramsID = req.params._id;
+    const blogPosts = await readBlogPosts();
+    const blogPost = blogPosts.find((blogPost) => blogPost.id === paramsID);
+    if (blogPost) {
+      const remainingBlogPosts = blogPosts.filter(
+        (blogPost) => blogPost.id !== paramsID
+      );
+
+      await writeBlogPosts(remainingBlogPosts);
+
+      res.send({
+        message: `The Blog post with id: ${blogPost.id} was deleted`,
+        blogPost: blogPost,
+      });
+    } else {
+      next(
+        createHttpError(404, `The blog post with id: ${paramsID} was not found`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default blogPostsRouter;
