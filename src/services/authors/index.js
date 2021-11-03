@@ -1,6 +1,6 @@
 import express from "express"; // We need to import express to use it's functionalities
 import uniqid from "uniqid"; // will generate a unique ID for the authors
-import createHttpError from "http-errors"; // create http errors
+import createHttpError from "http-errors"; // Handle all status code errors messages with this package
 import multer from "multer";
 import { validationResult } from "express-validator";
 import { authorsValidation } from "./validation.js";
@@ -13,6 +13,12 @@ import {
   saveAvatarCloudinary,
   getAuthorsReadableStream,
 } from "../../lib/fs-tools.js";
+
+// READ --> GET http:localhost:3001/authors + (Optional Query Parameters) => returns the list of authors
+// READ --> GET /authors/123 => returns a single author
+// CREATE --> POST /authors (+body) => create a new author
+// UPDATE --> PUT /authors/123 (+ body) => edit the author with the given id
+// DELETE --> DELETE /authors/123 => delete the author with the given id
 
 // Router is a set of endpoints that share something like a prefix. authorsRouter is going to have /authors a a prefix.
 //  Here we use Router express functionality to provide Routing to the server
@@ -35,7 +41,8 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
       // push new author to the array
       authors.push(newAuthor);
       // Rewrite the new array to the json file
-      await writeAuthors(authors);
+      await writeAuthors(authors); // fs.writeFileSync(authorsJsonPath, authors)
+      // writeFileSync expects to receive as first parameter the path on disk where to write to, as a second parameter it expects to receive the data which needs to be written. JS objects need to be converted into strings if we want to save them into a JSON file
       // send back the the ID as response
       res.status(201).send(newAuthor);
     } else {
@@ -50,8 +57,11 @@ authorsRouter.post("/", authorsValidation, async (req, res, next) => {
 // Get all the authors
 authorsRouter.get("/", async (req, res, next) => {
   try {
-    // read the the content of authors.json
-    const authors = await readAuthors();
+    // read the the content of authors.json and obtain the authors array.
+    // It converts from machine language (buffer) to JSON
+    const authors = await readAuthors(); // --> JSON.parse(fs.readFileSync(authorsJsonPath).toString);
+    // readFileSync expects to receive a path on disk to read from and returns a Buffer, a sequence of Bytes which can be converted into a human readable string with the toString() method
+
     //2. send back the array of authors
     res.status(200).send(authors);
   } catch (error) {

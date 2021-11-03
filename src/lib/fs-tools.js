@@ -1,6 +1,6 @@
 import fs from "fs-extra"; // will enable to read or write the json file at the particular path
-import { fileURLToPath } from "url"; // it's core module to convert the current url from import.meta.url to current file path
-import { join, dirname } from "path"; // core modules, dirname will localize the directory name, join will join directory with json file name
+import { fileURLToPath } from "url"; // it's core module (no need to install) to convert the current url from import.meta.url to current file path
+import { join, dirname } from "path"; // core modules(no need to install). dirname will localize the directory name, join will join directory with json file name
 
 import { v2 as cloudinary } from "cloudinary"; // cloudinary module
 import { CloudinaryStorage } from "multer-storage-cloudinary"; // cloudinary module
@@ -17,10 +17,14 @@ const {
 } = fs;
 
 // obtaining the path to the authors json file
-//1. starting from the current file path
+//1. 1. I'll start from the current file I'm in right now (C://......./authors/index.js) and I'll get the path to that file
+// import.meta.url give us info about the url of the current module
+// fileURLToPath converts that url into a path
 // const currentFilePath = fileURLToPath(import.meta.url);
-//2. Next we obtain the path of the directory the current file is in
+//2. Next we obtain the path of the directory the current file is in (I'll get the parent folder's path)
+// dirname extracts the directory name from the specified path
 // const currentDirPath = dirname(currentFilePath);
+// that is the same as const currentDir = dirname(fileURLToPath(import.meta.url))
 //3. Next step is to concatenate the directory path with the json file name which is authors.json
 //ATTENTION USE THE METHOD JOIN (from path) AND NOT CONCATENATE AS USUAL WITH +, this way will function for every system
 // const authorsJSONPath = join(currentDirPath, "authors.json");
