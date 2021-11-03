@@ -5,7 +5,7 @@ import { join, dirname } from "path"; // core modules, dirname will localize the
 import { v2 as cloudinary } from "cloudinary"; // cloudinary module
 import { CloudinaryStorage } from "multer-storage-cloudinary"; // cloudinary module
 
-//  fs variables
+//  fs variables to read & write
 const {
   readJSON,
   writeJSON,
@@ -25,6 +25,7 @@ const {
 //ATTENTION USE THE METHOD JOIN (from path) AND NOT CONCATENATE AS USUAL WITH +, this way will function for every system
 // const authorsJSONPath = join(currentDirPath, "authors.json");
 
+// Folders URL path
 const blogPostsJSONPath = join(
   dirname(fileURLToPath(import.meta.url)),
   "../data/blogs.json"
@@ -48,6 +49,7 @@ export const authorsAvatarsFolderPath = join(
 // const publicFolderPath = join(process.cwd(), "./public/img/"); //process.cwd() is ROOT
 
 // *************** AUTHORS ****************
+// Functions stored into a variable to read & write
 export const readAuthors = () => readJSON(authorsJSONPath);
 export const writeAuthors = (content) => writeJSON(authorsJSONPath, content);
 export const getAuthorsReadableStream = () => createReadStream(authorsJSONPath);

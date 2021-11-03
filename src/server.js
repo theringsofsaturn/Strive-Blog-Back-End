@@ -1,3 +1,5 @@
+// OLD IMPORT SYNTAX const express = require("express")
+
 import express from "express";
 import cors from "cors"
 import listEndpoints from "express-list-endpoints";
@@ -12,7 +14,7 @@ import {
 } from "./errorHandlers.js"
 
 const server = express(); // const app = express();
-const port = 3001; //server to listen on the port, it is stored into a variable
+const port = 3001; //server to listen on the port, stored into a variable
 
 //*********** MIDDLEWARES ***************************
 // const loggerMiddleware = (res, req, next) => {
@@ -23,11 +25,13 @@ const port = 3001; //server to listen on the port, it is stored into a variable
 // };
 
 // server.use(loggerMiddleware)
+
 //cors and express are middlewares
 server.use(express.json()) //this has to be specified BEFORE the routes, otherwise the body will be undefined *** the same as app.use(express.json());
 server.use(cors()) //cors connects BE with FE *** the same as app.use(cors());
 
 // *********************** ROUTES ***************************
+// all of the endpoints which are in the authorsRouter will have "/authors" as a prefix
 server.use("/authors", authorsRouter)
 server.use("/blogPosts", blogPostsRouter)
 
@@ -38,7 +42,7 @@ server.use(badRequestHandler)
 server.use(forbiddenHandler)
 server.use(genericServerErrorHandler)
 
-console.table(listEndpoints(server))
+console.table(listEndpoints(server)) // tree of the routes
 
 //server to listen on the port, it is stored into a variable
 server.listen(port, () => {
